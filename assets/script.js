@@ -1,6 +1,6 @@
 let runningTotal = 0;
 let buffer = "0";
-let previusOperator;
+let previousOperator;
 
 const screen = document.querySelector('.screen');
 
@@ -19,25 +19,26 @@ function handleSymbol(symbol) {
             buffer = '0';
             runningTotal = '0';
             break;
-        case '=';
-            if (previusOperator === null) {
+        case '=':
+            if (previousOperator === null) {
                 return
             }
             flushOperation(parseInt(buffer));
-            previusOperator = null;
+            previousOperator = null;
             buffer = runningTotal;
+            runningTotal = 0;
             break;
-        case '←'
+        case '←':
             if (buffer.length === 1) {
                 buffer = '0';
             } else {
-                buffer = buffer.toString(0, buffer.length - 1);
+                buffer = buffer.substring(0, buffer.length - 1);
             }
             break
-        case '+';
-        case '−';
-        case '×';
-        case '÷';
+        case '+':
+        case '−':
+        case '×':
+        case '÷':
             handleMath(symbol);
             break;
     }
@@ -50,8 +51,39 @@ function handleMath(symbol) {
 
     const intBuffer = parseInt(buffer);
 
-    if (runningTotal === 0{
+    if (runningTotal === 0) {
         runningTotal = intBuffer;
     } else {
+        flushOperation(intBuffer);
+    }
+    previousOperator = symbol;
+    buffer = '0';
+}
+
+function flushOperation(intBuffer) {
+    if (previousOperator === '+') {
+        runningTotal += intBuffer;
+    } else if (previousOperator === '−') {
+        runningTotal -= intBuffer;
+    } else if (previousOperator === '×') {
+        runningTotal *= intBuffer;
+    } else if (previousOperator === '÷') {
+        runningTotal /= intBuffer;
     }
 }
+
+function handleNumber(numberString) {
+    if (buffer === '0') {
+        buffer = numberString;
+    } else {
+        buffer += numberString;
+    }
+}
+
+function init() {
+    document.querySelector('.calc-buttons').addEventListener('click', function (event) {
+        buttonClick(event.target.innerText);
+    })
+}
+
+init()
